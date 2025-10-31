@@ -16,12 +16,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const GOOGLE_CLIENT_SECRET = configService.getOrThrow<string>(
       'GOOGLE_CLIENT_SECRET',
     );
-    const BASE_URL = configService.getOrThrow<string>('BASE_URL');
+    const BACKEND_URL = configService.getOrThrow<string>('BACKEND_URL');
 
     const options: StrategyOptions = {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: `${BASE_URL}/api/auth/google/redirect`,
+      callbackURL: `${BACKEND_URL}/api/auth/google/redirect`,
       scope: ['email', 'profile'],
     };
 

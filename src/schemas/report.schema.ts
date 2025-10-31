@@ -1,32 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-
-export enum ReportStatus {
-  PENDING = 'Pending',
-  UNDER_REVIEW = 'Under Review',
-  RESOLVED = 'Resolved',
-  DISMISSED = 'Dismissed',
-}
-
-export enum ReportAction {
-  NO_ACTION = 'No Action',
-  WARNING_SENT = 'Warning Sent',
-  CONTENT_REMOVED = 'Content Removed',
-  ACCOUNT_SUSPENDED = 'Account Suspended',
-  ACCOUNT_BANNED = 'Account Banned',
-}
-
-export enum Reason {
-  HARASSMENT = 'Harassment',
-  SUICIDE_OR_SELF_INJURY = 'Suicide or self-injury',
-  VIOLENCE = 'Violence or dangerous organizations',
-  NUDITY = 'Nudity or sexual activity',
-  SELLING = 'Selling or promoting restricted items',
-  SCAM_OR_FRAUD = 'Scam or fraud',
-  BLACKMAIL = 'Blackmail',
-  IDENTITY_THEFT = 'Identity Theft',
-  OTHER = 'Other',
-}
+import { Reason, ReportAction, ReportStatus } from 'src/utils/enums';
 
 @Schema({ timestamps: true })
 export class Report {
@@ -45,7 +19,7 @@ export class Report {
   reportedUser: mongoose.Types.ObjectId;
 
   @Prop({
-    type: [Reason],
+    type: [String],
     enum: Reason,
     validate: {
       validator: (arr: Reason[]) => Array.isArray(arr) && arr.length > 0,
@@ -60,17 +34,17 @@ export class Report {
   @Prop({ required: true, enum: ReportStatus, default: ReportStatus.PENDING })
   status: ReportStatus;
 
-  @Prop({ enum: ReportAction })
-  action?: ReportAction;
+  @Prop({ type: String, enum: ReportAction, default: null })
+  action: ReportAction | null;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Admin' })
-  reviewedBy?: mongoose.Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null })
+  reviewedBy: mongoose.Types.ObjectId | null;
 
-  @Prop()
-  reviewedAt?: Date;
+  @Prop({ type: Date, default: null })
+  reviewedAt: Date | null;
 
-  @Prop()
-  reviewNotes?: string;
+  @Prop({ type: String, default: null })
+  reviewNotes: string | null;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

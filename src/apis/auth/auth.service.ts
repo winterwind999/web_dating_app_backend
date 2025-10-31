@@ -21,14 +21,12 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
-    private readonly tokenService: TokenService,
     private readonly jwtService: JwtService,
     private readonly csrfService: CsrfService,
     @InjectModel(Otp.name) private readonly otpModel: Model<OtpDocument>,
@@ -65,6 +63,8 @@ export class AuthService {
     if (!verifyPwd) {
       throw new UnauthorizedException('Email Address or Password is incorrect');
     }
+
+    user.password = '';
 
     return user;
   }
@@ -109,6 +109,7 @@ export class AuthService {
     const REFRESH_TOKEN_SECRET = this.configService.get<string>(
       'REFRESH_TOKEN_SECRET',
     );
+    const NODE_ENV = this.configService.get<string>('NODE_ENV');
 
     const { data: decoded, error: errorDecoded } = await tryCatch(
       this.jwtService.verifyAsync(refreshToken, {
@@ -117,11 +118,7 @@ export class AuthService {
     );
 
     if (errorDecoded) {
-      throw new InternalServerErrorException('Failed to decode token');
-    }
-
-    if (!decoded.sub) {
-      throw new UnauthorizedException('Invalid token payload');
+      throw new UnauthorizedException('Invalid refresh token');
     }
 
     const { data: user, error: errorUser } = await tryCatch(
@@ -142,13 +139,8 @@ export class AuthService {
     // accessToken
     const { data: accessToken, error: errorAccessToken } = await tryCatch(
       this.jwtService.signAsync(
-        {
-          sub: user._id,
-        },
-        {
-          secret: ACCESS_TOKEN_SECRET,
-          expiresIn: '1d',
-        },
+        { sub: user._id },
+        { secret: ACCESS_TOKEN_SECRET, expiresIn: '1d' },
       ),
     );
 
@@ -159,6 +151,7 @@ export class AuthService {
       );
     }
 
+    // CSRF token in cookie
     const csrfToken = this.csrfService.generateToken(req, res);
 
     if (!csrfToken) {

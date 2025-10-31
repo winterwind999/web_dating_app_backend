@@ -7,7 +7,7 @@ import { UserDocument } from 'src/schemas/user.schema';
 import { tryCatch } from 'src/utils/tryCatch';
 
 @Injectable()
-export class TokenService {
+export class TokensService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -18,10 +18,7 @@ export class TokenService {
     req: Request,
     res: Response,
     user: UserDocument,
-  ): Promise<{
-    accessToken: string;
-    csrfToken: string;
-  }> {
+  ): Promise<{ accessToken: string; csrfToken: string }> {
     const ACCESS_TOKEN_SECRET = this.configService.get<string>(
       'ACCESS_TOKEN_SECRET',
     );
@@ -33,51 +30,39 @@ export class TokenService {
     // accessToken
     const { data: accessToken, error: errorAccessToken } = await tryCatch(
       this.jwtService.signAsync(
-        {
-          sub: user._id,
-        },
-        {
-          secret: ACCESS_TOKEN_SECRET,
-          expiresIn: '1d',
-        },
+        { sub: user._id },
+        { secret: ACCESS_TOKEN_SECRET, expiresIn: '1d' },
       ),
     );
 
     if (errorAccessToken) {
-      throw new InternalServerErrorException(
-        'Failed to generate Access Token:',
-        errorAccessToken.message,
-      );
+      throw new InternalServerErrorException('Failed to generate Access Token');
     }
 
     // refreshToken
     const { data: refreshToken, error: errorRefreshToken } = await tryCatch(
       this.jwtService.signAsync(
-        {
-          sub: user._id,
-        },
-        {
-          secret: REFRESH_TOKEN_SECRET,
-          expiresIn: '1d',
-        },
+        { sub: user._id },
+        { secret: REFRESH_TOKEN_SECRET, expiresIn: '7d' },
       ),
     );
 
     if (errorRefreshToken) {
       throw new InternalServerErrorException(
-        'Failed to generate Refresh Token:',
-        errorRefreshToken.message,
+        'Failed to generate Refresh Token',
       );
     }
 
+    // Store refreshToken in HTTP-only cookie
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       secure: NODE_ENV === 'production',
       sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 1 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     });
 
+    // CSRF token in cookie
     const csrfToken = this.csrfService.generateToken(req, res);
 
     if (!csrfToken) {

@@ -1,10 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { CorsOptions } from 'cors';
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://jgf-portfolio.onrender.com',
-];
+const allowedOrigins = ['http://localhost:5173'];
 
 export const createCorsOptions = (
   configService: ConfigService,

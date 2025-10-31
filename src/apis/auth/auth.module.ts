@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/core/passport-strategies/jwt.strategy';
 import { LocalStrategy } from 'src/core/passport-strategies/local.strategy';
+import { TokensModule } from 'src/helpers/tokens/tokens.module';
 import { CsrfService } from 'src/middlewares/csrf/csrf.service';
 import { Otp, OtpSchema } from 'src/schemas/otp.schema';
 import { User, UserSchema } from 'src/schemas/user.schema';
@@ -12,7 +13,6 @@ import { GoogleStrategy } from '../../core/passport-strategies/google.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { TokenService } from './token.service';
 
 @Module({
   imports: [
@@ -38,17 +38,17 @@ import { TokenService } from './token.service';
         schema: UserSchema,
       },
     ]),
+    TokensModule,
     UsersModule,
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
-    TokenService,
     CsrfService,
     LocalStrategy,
     JwtStrategy,
     GoogleStrategy,
   ],
-  exports: [AuthService, TokenService],
+  exports: [AuthService],
 })
 export class AuthModule {}

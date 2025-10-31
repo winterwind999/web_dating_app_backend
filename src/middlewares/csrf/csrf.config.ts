@@ -24,8 +24,7 @@ export const createCsrfConfig = (configService: ConfigService) => {
     ignoredMethods: ['GET', 'HEAD', 'OPTIONS'] as CsrfRequestMethod[],
     getTokenFromRequest: (req: Request) =>
       req.headers['x-csrf-token'] as string,
-    getSessionIdentifier: (req: Request) =>
-      req.cookies?.jwt || req.headers['x-session-id'] || 'anonymous',
+    getSessionIdentifier: (req: Request) => req.cookies?.jwt || 'anonymous',
   };
 
   return {

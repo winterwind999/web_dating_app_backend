@@ -4,11 +4,8 @@
 
 - **NestJS** — Scalable backend framework
 - **MongoDB + Mongoose** — NoSQL database with schema validation
-- **Passport.js** — JWT and OAuth2 with Google
-- **CSRF** — Additional Auth Security
-- **Multer** — File upload middleware
-- **Cloudflare R2** — Media file storage (images/videos)
-- **Custom Exception Filters & Logger** — Unified error and log handling
+- **Passport.js** — JWT and OAuth 2.0 with Google
+- **Cloudinary** — Media file storage (images/videos)
 
 ## Project Setup
 
@@ -57,20 +54,18 @@
 - ✅ Integrate Passport.js with JWT
 - ✅ Integrate Passport.js with Google
 - ✅ Setup Role-based access control
-- ⏳ Setup controllers and services for likes, dislikes, matches, reports, and blocks
-- ⏳ Setup admin controllers and services
+- ✅ Setup controllers and services for likes, dislikes, matches, reports, blocks, and feeds
+- ✅ Setup admin controllers and services
 - ✅ Setup Multer for uploads
-- ⏳ Setup Cloudflare R2 for image and video storage
-- ⏳ Setup WebSockets
-- ⏳ Add real-time notifications and chats
-- ⏳ Add admin dashboard API
-- ⏳ Add automated tests (Jest + Playwright)
-- ⏳ Setup GitHub Actions Workflow
-- ⏳ Setup Docker
-- ⏳ Deploy to Fly.io
-- ⏳ Fumadocs for documentation
+- ✅ Setup Cloudinary
+- ✅ Setup controllers and services for uploading photo and albums
+- ✅ Setup WebSockets
+- ✅ Setup notifications and chats schema
+- ⚠️ Add real-time notifications and chats
+- ✅ Add admin dashboard API
+- ⏳ Deploy to Render
 
-## 📄 License
+## License
 
 © 2025 Jordan G. Faciol. All rights reserved.
 

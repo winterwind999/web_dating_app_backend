@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Reason } from './report.schema';
+import { Reason } from 'src/utils/enums';
 
 @Schema({ timestamps: true })
 export class Block {
@@ -19,14 +19,14 @@ export class Block {
   blockedUser: mongoose.Types.ObjectId;
 
   @Prop({
-    type: [Reason],
+    type: [String],
     required: true,
     validate: {
       validator: (arr: string[]) => Array.isArray(arr) && arr.length > 0,
       message: 'At least one reason is required',
     },
   })
-  reasons: string[];
+  reasons: Reason[];
 
   @Prop({ required: true })
   description: string;

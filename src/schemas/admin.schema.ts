@@ -4,6 +4,9 @@ import { HydratedDocument } from 'mongoose';
 @Schema({ timestamps: true })
 export class Admin {
   @Prop({ required: true, unique: true, trim: true })
+  username: string;
+
+  @Prop({ required: true, unique: true, trim: true })
   email: string;
 
   @Prop({ required: true })

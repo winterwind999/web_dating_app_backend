@@ -7,12 +7,7 @@ import {
   IsString,
   validateSync,
 } from 'class-validator';
-
-export enum Environment {
-  Development = 'development',
-  Production = 'production',
-  Test = 'test',
-}
+import { Environment } from 'src/utils/enums';
 
 class EnvironmentVariables {
   @IsEnum(Environment, {
@@ -27,6 +22,14 @@ class EnvironmentVariables {
 
   @IsNumber({}, { message: 'PORT must be a number' })
   PORT: number = 3500;
+
+  @IsString({ message: 'FRONTEND_URL must be a string' })
+  @IsNotEmpty({ message: 'FRONTEND_URL is required' })
+  FRONTEND_URL: string;
+
+  @IsString({ message: 'BACKEND_URL must be a string' })
+  @IsNotEmpty({ message: 'BACKEND_URL is required' })
+  BACKEND_URL: string;
 
   @IsString({ message: 'ACCESS_TOKEN_SECRET must be a string' })
   @IsNotEmpty({ message: 'ACCESS_TOKEN_SECRET is required' })
@@ -55,6 +58,18 @@ class EnvironmentVariables {
   @IsString({ message: 'GOOGLE_CLIENT_SECRET must be a string' })
   @IsNotEmpty({ message: 'GOOGLE_CLIENT_SECRET is required' })
   GOOGLE_CLIENT_SECRET: string;
+
+  @IsString({ message: 'CLOUDINARY_API_KEY must be a string' })
+  @IsNotEmpty({ message: 'CLOUDINARY_API_KEY is required' })
+  CLOUDINARY_API_KEY: string;
+
+  @IsString({ message: 'CLOUDINARY_API_SECRET must be a string' })
+  @IsNotEmpty({ message: 'CLOUDINARY_API_SECRET is required' })
+  CLOUDINARY_API_SECRET: string;
+
+  @IsString({ message: 'CLOUDINARY_CLOUDNAME must be a string' })
+  @IsNotEmpty({ message: 'CLOUDINARY_CLOUDNAME is required' })
+  CLOUDINARY_CLOUDNAME: string;
 }
 
 export function validate(config: Record<string, unknown>) {
@@ -86,6 +101,8 @@ const configuration = () => ({
   NODE_ENV: process.env.NODE_ENV || 'development',
   NODE_VERSION: process.env.NODE_VERSION,
   PORT: Number(process.env.PORT) || 3500,
+  FRONTEND_URL: process.env.FRONTEND_URL,
+  BACKEND_URL: process.env.BACKEND_URL,
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   CSRF_SECRET: process.env.CSRF_SECRET,
@@ -93,6 +110,9 @@ const configuration = () => ({
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  CLOUDINARY_CLOUDNAME: process.env.CLOUDINARY_CLOUDNAME,
 });
 
 export default configuration;
