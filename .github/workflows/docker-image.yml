@@ -2,7 +2,7 @@ name: CI/CD - Build and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   build_and_push:
@@ -33,3 +33,6 @@ jobs:
 
       - name: Logout from Docker Hub
         run: docker logout
+
+      - name: Trigger Render Deploy
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
