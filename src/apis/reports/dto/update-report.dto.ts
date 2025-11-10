@@ -1,9 +1,9 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { ReportAction } from 'src/utils/enums';
+import { REPORT_ACTIONS, type ReportAction } from 'src/utils/constants';
 import { CreateReportDto } from './create-report.dto';
 
 export class UpdateReportDto extends CreateReportDto {
-  @IsEnum(ReportAction)
+  @IsEnum(Object.values(REPORT_ACTIONS))
   @IsNotEmpty()
   action: ReportAction;
 

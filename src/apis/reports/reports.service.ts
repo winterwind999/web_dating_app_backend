@@ -26,8 +26,7 @@ export class ReportsService {
 
     if (errorReport) {
       throw new InternalServerErrorException(
-        'Failed to create new Report:',
-        errorReport.message,
+        `Failed to create new Report: ${errorReport.message}`,
       );
     }
 
@@ -53,8 +52,7 @@ export class ReportsService {
 
     if (errorReport) {
       throw new InternalServerErrorException(
-        'Failed to update Report:',
-        errorReport.message,
+        `Failed to update Report: ${errorReport.message}`,
       );
     }
 

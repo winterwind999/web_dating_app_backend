@@ -1,0 +1,12 @@
+services:
+  web_dating_app_backend:
+    image: web_dating_app_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3500:3500'
+    env_file:
+      - .env
+    volumes:
+      - ./src:/usr/src/app/src

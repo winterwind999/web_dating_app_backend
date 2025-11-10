@@ -1,5 +1,5 @@
 import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { Reason } from 'src/utils/enums';
+import { REPORT_REASONS, type ReportReason } from 'src/utils/constants';
 
 export class CreateBlockDto {
   @IsString()
@@ -11,9 +11,9 @@ export class CreateBlockDto {
   blockedUser: string;
 
   @IsArray()
-  @IsEnum(Reason, { each: true })
+  @IsEnum(Object.values(REPORT_REASONS), { each: true })
   @IsNotEmpty()
-  reasons: Reason[];
+  reasons: ReportReason[];
 
   @IsString()
   @IsNotEmpty()

@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { CsrfRequestMethod } from 'csrf-csrf';
 import { Request } from 'express';
+import { jwtDecode } from 'jwt-decode';
 
 export const createCsrfConfig = (configService: ConfigService) => {
   const NODE_ENV = configService.get<string>('NODE_ENV');
@@ -15,7 +16,7 @@ export const createCsrfConfig = (configService: ConfigService) => {
     getSecret: () => CSRF_SECRET as string,
     cookieName: CSRF_COOKIE_NAME,
     cookieOptions: {
-      httpOnly: true,
+      httpOnly: false,
       secure: isProduction,
       sameSite: isProduction ? ('none' as const) : ('lax' as const),
       path: '/',
@@ -24,7 +25,18 @@ export const createCsrfConfig = (configService: ConfigService) => {
     ignoredMethods: ['GET', 'HEAD', 'OPTIONS'] as CsrfRequestMethod[],
     getTokenFromRequest: (req: Request) =>
       req.headers['x-csrf-token'] as string,
-    getSessionIdentifier: (req: Request) => req.cookies?.jwt || 'anonymous',
+    // getSessionIdentifier: (req: Request) =>
+    //   req.cookies?.refreshToken || 'anonymous',
+    getSessionIdentifier: (req: Request) => {
+      const token = req.cookies?.refreshToken;
+      if (!token) return 'anonymous';
+      try {
+        const payload = jwtDecode(token) as any;
+        return payload.sub; // user ID
+      } catch {
+        return 'anonymous';
+      }
+    },
   };
 
   return {

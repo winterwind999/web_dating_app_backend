@@ -40,8 +40,7 @@ export class AuthService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to verify Email Address',
-        errorUser.message,
+        `Failed to verify Email Address: ${errorUser.message}`,
       );
     }
 
@@ -55,8 +54,7 @@ export class AuthService {
 
     if (errorVerifyPwd) {
       throw new InternalServerErrorException(
-        'Failed to verify Password:',
-        errorVerifyPwd.message,
+        `Failed to verify Password: ${errorVerifyPwd.message}`,
       );
     }
 
@@ -76,8 +74,7 @@ export class AuthService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to get User:',
-        errorUser.message,
+        `Failed to get User: ${errorUser.message}`,
       );
     }
 
@@ -92,16 +89,15 @@ export class AuthService {
     req: Request,
     res: Response,
   ): Promise<{
-    accessToken: string;
-    csrfToken: string;
+    success: boolean;
   }> {
     const cookies = req.cookies;
 
-    if (!cookies?.jwt) {
+    if (!cookies?.refreshToken) {
       throw new UnauthorizedException('No token provided');
     }
 
-    const refreshToken = cookies.jwt;
+    const refreshToken = cookies.refreshToken;
 
     const ACCESS_TOKEN_SECRET = this.configService.get<string>(
       'ACCESS_TOKEN_SECRET',
@@ -127,8 +123,7 @@ export class AuthService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to get User:',
-        errorUser.message,
+        `Failed to get User: ${errorUser.message}`,
       );
     }
 
@@ -146,10 +141,17 @@ export class AuthService {
 
     if (errorAccessToken) {
       throw new InternalServerErrorException(
-        'Failed to generate Access Token:',
-        errorAccessToken.message,
+        `Failed to generate Access Token: ${errorAccessToken.message}`,
       );
     }
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: NODE_ENV === 'production',
+      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
 
     // CSRF token in cookie
     const csrfToken = this.csrfService.generateToken(req, res);
@@ -159,21 +161,27 @@ export class AuthService {
     }
 
     return {
-      accessToken,
-      csrfToken,
+      success: true,
     };
   }
 
   async logout(req: Request, res: Response): Promise<void> {
     const cookies = req.cookies;
 
-    if (!cookies?.jwt) {
+    if (!cookies?.refreshToken) {
       return;
     }
 
     const NODE_ENV = this.configService.get<string>('NODE_ENV');
 
-    res.clearCookie('jwt', {
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: NODE_ENV === 'production',
+      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+    });
+
+    res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: NODE_ENV === 'production',
       sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
@@ -199,8 +207,7 @@ export class AuthService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to get User:',
-        errorUser.message,
+        `Failed to get User: ${errorUser.message}`,
       );
     }
 
@@ -221,8 +228,9 @@ export class AuthService {
       throw new InternalServerErrorException('Failed to generate OTP');
     }
 
-    const { data: deleteExistingOtps, error: errorDeleteExistingOtps } =
-      await tryCatch(this.otpModel.deleteMany({ email: user.email }).exec());
+    const { error: errorDeleteExistingOtps } = await tryCatch(
+      this.otpModel.deleteMany({ email: user.email }).exec(),
+    );
 
     if (errorDeleteExistingOtps) {
       throw new InternalServerErrorException('Failed to delete existing OTPs');
@@ -234,9 +242,7 @@ export class AuthService {
       expiresAt,
     });
 
-    const { data: savedOtp, error: errorSavedOtp } = await tryCatch(
-      newOtp.save(),
-    );
+    const { error: errorSavedOtp } = await tryCatch(newOtp.save());
 
     if (errorSavedOtp) {
       throw new InternalServerErrorException('Failed to create OTP');
@@ -261,8 +267,7 @@ export class AuthService {
 
     if (errorSend) {
       throw new InternalServerErrorException(
-        'Failed to OTP send to Email Address',
-        errorSend.message,
+        `Failed to OTP send to Email Address: ${errorSend.message}`,
       );
     }
 
@@ -278,8 +283,7 @@ export class AuthService {
 
     if (errorOtps) {
       throw new InternalServerErrorException(
-        'Failed to verify OTP:',
-        errorOtps.message,
+        `Failed to verify OTP: ${errorOtps.message}`,
       );
     }
 
@@ -311,10 +315,9 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired OTP');
     }
 
-    const { data: deleteExistingOtps, error: errorDeleteExistingOtps } =
-      await tryCatch(
-        this.otpModel.deleteMany({ email: verifyOtpDto.email }).exec(),
-      );
+    const { error: errorDeleteExistingOtps } = await tryCatch(
+      this.otpModel.deleteMany({ email: verifyOtpDto.email }).exec(),
+    );
 
     if (errorDeleteExistingOtps) {
       throw new InternalServerErrorException('Failed to delete existing OTPs');
@@ -332,8 +335,7 @@ export class AuthService {
 
     if (errorHashedPwd) {
       throw new InternalServerErrorException(
-        'Failed to encrypt Password:',
-        errorHashedPwd.message,
+        `Failed to encrypt Password: ${errorHashedPwd.message}`,
       );
     }
 
@@ -348,8 +350,7 @@ export class AuthService {
 
     if (errorUpdateUser) {
       throw new InternalServerErrorException(
-        'Failed to update User:',
-        errorUpdateUser.message,
+        `Failed to update User: ${errorUpdateUser.message}`,
       );
     }
 

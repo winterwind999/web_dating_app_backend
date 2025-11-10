@@ -20,8 +20,7 @@ export class DislikesService {
 
     if (errorDislike) {
       throw new InternalServerErrorException(
-        'Failed to create new Dislike:',
-        errorDislike.message,
+        `Failed to create new Dislike: ${errorDislike.message}`,
       );
     }
 

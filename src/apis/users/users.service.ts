@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt';
 import { isObjectIdOrHexString, Model } from 'mongoose';
 import { CloudinaryService } from 'src/helpers/cloudinary/cloudinary.service';
 import { User, UserDocument } from 'src/schemas/user.schema';
+import { Album } from 'src/utils/constants';
 import { geocoder } from 'src/utils/geocoder';
 import { tryCatch } from 'src/utils/tryCatch';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -54,10 +55,15 @@ export class UsersService {
       tryCatch(this.userModel.countDocuments(filter).exec()),
     ]);
 
-    if (errorUsers || errorCount) {
+    if (errorUsers) {
       throw new InternalServerErrorException(
-        'Failed to get Users:',
-        errorUsers?.message || errorCount?.message,
+        `Failed to get Users: ${errorUsers.message}`,
+      );
+    }
+
+    if (errorCount) {
+      throw new InternalServerErrorException(
+        `Failed to get Users count: ${errorCount.message}`,
       );
     }
 
@@ -84,8 +90,7 @@ export class UsersService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to get User:',
-        errorUser.message,
+        `Failed to get User: ${errorUser.message}`,
       );
     }
 
@@ -103,8 +108,7 @@ export class UsersService {
 
     if (errorDuplicateEmail) {
       throw new InternalServerErrorException(
-        'Failed to check Email Address:',
-        errorDuplicateEmail.message,
+        `Failed to check Email Address: ${errorDuplicateEmail.message}`,
       );
     }
 
@@ -118,8 +122,7 @@ export class UsersService {
 
     if (errorHashedPwd) {
       throw new InternalServerErrorException(
-        'Failed to encrypt Password:',
-        errorHashedPwd.message,
+        `Failed to encrypt Password: ${errorHashedPwd.message}`,
       );
     }
 
@@ -131,8 +134,7 @@ export class UsersService {
 
     if (geoError) {
       throw new InternalServerErrorException(
-        'Failed to geocode address',
-        geoError.message,
+        `Failed to geocode address: ${geoError.message}`,
       );
     }
 
@@ -155,8 +157,7 @@ export class UsersService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to create new User:',
-        errorUser.message,
+        `Failed to create new User: ${errorUser.message}`,
       );
     }
 
@@ -179,8 +180,7 @@ export class UsersService {
 
     if (errorDuplicateEmail) {
       throw new InternalServerErrorException(
-        'Failed to check Email Address:',
-        errorDuplicateEmail.message,
+        `Failed to check Email Address: ${errorDuplicateEmail.message}`,
       );
     }
 
@@ -194,8 +194,7 @@ export class UsersService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to check Email Address:',
-        errorUser.message,
+        `Failed to check Email Address: ${errorUser.message}`,
       );
     }
 
@@ -211,8 +210,7 @@ export class UsersService {
 
       if (errorHashedPwd) {
         throw new InternalServerErrorException(
-          'Failed to encrypt Password:',
-          errorHashedPwd.message,
+          `Failed to encrypt Password: ${errorHashedPwd.message}`,
         );
       }
 
@@ -227,8 +225,7 @@ export class UsersService {
 
     if (geoError) {
       throw new InternalServerErrorException(
-        'Failed to geocode address',
-        geoError.message,
+        `Failed to geocode address: ${geoError.message}`,
       );
     }
 
@@ -260,8 +257,7 @@ export class UsersService {
 
     if (errorUpdateUser) {
       throw new InternalServerErrorException(
-        'Failed to update User:',
-        errorUpdateUser.message,
+        `Failed to update User: ${errorUpdateUser.message}`,
       );
     }
 
@@ -285,8 +281,7 @@ export class UsersService {
 
     if (errorUploadedPhoto) {
       throw new InternalServerErrorException(
-        'Failed to upload photo to Cloudinary:',
-        errorUploadedPhoto.message,
+        `Failed to upload photo to Cloudinary: ${errorUploadedPhoto.message}`,
       );
     }
 
@@ -310,8 +305,7 @@ export class UsersService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to update User:',
-        errorUser.message,
+        `Failed to update User: ${errorUser.message}`,
       );
     }
 
@@ -339,8 +333,7 @@ export class UsersService {
 
     if (errorUser) {
       throw new InternalServerErrorException(
-        'Failed to get User:',
-        errorUser.message,
+        `Failed to get User: ${errorUser.message}`,
       );
     }
 
@@ -363,8 +356,7 @@ export class UsersService {
 
       if (errorDelete) {
         throw new InternalServerErrorException(
-          `Failed to delete an album in Cloudinary: ${deletedAlbum.public_id},`,
-          errorDelete.message,
+          `Failed to delete an album in Cloudinary: ${deletedAlbum.public_id}, ${errorDelete.message}`,
         );
       }
     }
@@ -383,8 +375,7 @@ export class UsersService {
 
         if (errorResult) {
           throw new InternalServerErrorException(
-            `Failed to upload album ${album.originalname} to Cloudinary:`,
-            errorResult.message,
+            `Failed to upload album ${album.originalname} to Cloudinary: ${errorResult.message}`,
           );
         }
 
@@ -418,8 +409,7 @@ export class UsersService {
 
     if (errorUpdate) {
       throw new InternalServerErrorException(
-        'Failed to update User:',
-        errorUpdate.message,
+        `Failed to update User: ${errorUpdate.message}`,
       );
     }
 

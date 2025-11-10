@@ -12,7 +12,12 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Gender, UserStatus } from 'src/utils/enums';
+import {
+  type Gender,
+  GENDERS,
+  USER_STATUSES,
+  type UserStatus,
+} from 'src/utils/constants';
 
 export class AddressDto {
   @IsOptional()
@@ -35,7 +40,7 @@ export class AddressDto {
 export class PreferencesDto {
   @IsArray()
   @ArrayMinSize(1)
-  @IsEnum(Gender, { each: true })
+  @IsEnum(Object.values(GENDERS), { each: true })
   genderPreference: Gender[];
 
   @IsNumber()
@@ -82,7 +87,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   birthday: string;
 
-  @IsEnum(Gender)
+  @IsEnum(Object.values(GENDERS))
   @IsNotEmpty()
   gender: Gender;
 
@@ -103,7 +108,7 @@ export class CreateUserDto {
   @Type(() => PreferencesDto)
   preferences: PreferencesDto;
 
-  @IsEnum(UserStatus)
+  @IsEnum(Object.values(USER_STATUSES))
   @IsNotEmpty()
   status: UserStatus;
 }

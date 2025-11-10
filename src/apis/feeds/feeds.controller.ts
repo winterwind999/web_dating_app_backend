@@ -7,6 +7,6 @@ export class FeedsController {
 
   @Get(':userId')
   findOne(@Param('userId') userId: string) {
-    return this.feedsService.findOne(userId);
+    return this.feedsService.getFeeds(userId);
   }
 }

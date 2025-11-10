@@ -17,6 +17,7 @@ import { MatchesModule } from './apis/matches/matches.module';
 import { NotificationsModule } from './apis/notifications/notifications.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { UsersModule } from './apis/users/users.module';
+import { WebsocketsModule } from './apis/websockets/websockets.module';
 import configuration, { validate } from './configs/env.config';
 import { CsrfGuard } from './core/guards/csrf.guard';
 import { JwtAuthGuard } from './core/guards/jwt.guard';
@@ -43,12 +44,17 @@ import { CsrfModule } from './middlewares/csrf/csrf.module';
       {
         name: 'short',
         ttl: 1000,
-        limit: 3,
+        limit: 10,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 50,
       },
       {
         name: 'long',
         ttl: 60000,
-        limit: 100,
+        limit: 200,
       },
     ]),
     MulterModule.register({
@@ -69,6 +75,7 @@ import { CsrfModule } from './middlewares/csrf/csrf.module';
     FeedsModule,
     NotificationsModule,
     ChatsModule,
+    WebsocketsModule,
   ],
   controllers: [],
   providers: [

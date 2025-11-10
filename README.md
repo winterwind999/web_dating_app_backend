@@ -61,8 +61,10 @@
 - ✅ Setup controllers and services for uploading photo and albums
 - ✅ Setup WebSockets
 - ✅ Setup notifications and chats schema
-- ⚠️ Add real-time notifications and chats
+- ✅ Add real-time notifications and chats
 - ✅ Add admin dashboard API
+- ✅ Dockerize backend
+- ✅ Setup GitHub Actions
 - ⏳ Deploy to Render
 
 ## License

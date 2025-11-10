@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { CorsOptions } from 'cors';
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['http://localhost:3000'];
 
 export const createCorsOptions = (
   configService: ConfigService,

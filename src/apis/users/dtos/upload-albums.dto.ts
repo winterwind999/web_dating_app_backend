@@ -8,7 +8,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { AlbumType } from 'src/utils/enums';
+import { ALBUM_TYPES, type AlbumType } from 'src/utils/constants';
 
 export class AlbumDto {
   @IsString()
@@ -19,7 +19,7 @@ export class AlbumDto {
   @IsNotEmpty()
   filename: string;
 
-  @IsEnum(AlbumType)
+  @IsEnum(Object.values(ALBUM_TYPES))
   @IsNotEmpty()
   type: AlbumType;
 

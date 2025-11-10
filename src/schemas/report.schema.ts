@@ -1,6 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Reason, ReportAction, ReportStatus } from 'src/utils/enums';
+import {
+  REPORT_ACTIONS,
+  REPORT_REASONS,
+  REPORT_STATUSES,
+  type ReportAction,
+  type ReportReason,
+  type ReportStatus,
+} from 'src/utils/constants';
 
 @Schema({ timestamps: true })
 export class Report {
@@ -20,21 +27,27 @@ export class Report {
 
   @Prop({
     type: [String],
-    enum: Reason,
+    enum: Object.values(REPORT_REASONS),
+    required: true,
     validate: {
-      validator: (arr: Reason[]) => Array.isArray(arr) && arr.length > 0,
+      validator: (arr: ReportReason[]) => Array.isArray(arr) && arr.length > 0,
       message: 'At least one reason is required',
     },
   })
-  reasons: Reason[];
+  reasons: ReportReason[];
 
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true, enum: ReportStatus, default: ReportStatus.PENDING })
+  @Prop({
+    type: String,
+    required: true,
+    enum: Object.values(REPORT_STATUSES),
+    default: REPORT_STATUSES.PENDING,
+  })
   status: ReportStatus;
 
-  @Prop({ type: String, enum: ReportAction, default: null })
+  @Prop({ type: String, enum: Object.values(REPORT_ACTIONS), default: null })
   action: ReportAction | null;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null })

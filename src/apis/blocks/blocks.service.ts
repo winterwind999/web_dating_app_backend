@@ -24,8 +24,7 @@ export class BlocksService {
 
     if (errorBlock) {
       throw new InternalServerErrorException(
-        'Failed to create new Block:',
-        errorBlock.message,
+        `Failed to create new Block: ${errorBlock.message}`,
       );
     }
 
@@ -51,8 +50,7 @@ export class BlocksService {
 
     if (errorBlock) {
       throw new InternalServerErrorException(
-        'Failed to update Block:',
-        errorBlock.message,
+        `Failed to update Block: ${errorBlock.message}`,
       );
     }
 

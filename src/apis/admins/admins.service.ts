@@ -50,10 +50,15 @@ export class AdminsService {
       tryCatch(this.adminModel.countDocuments(filter).exec()),
     ]);
 
-    if (errorAdmins || errorCount) {
+    if (errorAdmins) {
       throw new InternalServerErrorException(
-        'Failed to get Admins:',
-        errorAdmins?.message || errorCount?.message,
+        `Failed to get Admins: ${errorAdmins.message}`,
+      );
+    }
+
+    if (errorCount) {
+      throw new InternalServerErrorException(
+        `Failed to get Admins count: ${errorCount.message}`,
       );
     }
 
@@ -80,8 +85,7 @@ export class AdminsService {
 
     if (errorAdmin) {
       throw new InternalServerErrorException(
-        'Failed to get Admin:',
-        errorAdmin.message,
+        `Failed to get Admin: ${errorAdmin.message}`,
       );
     }
 
@@ -98,8 +102,7 @@ export class AdminsService {
 
     if (errorDuplicateUsername) {
       throw new InternalServerErrorException(
-        'Failed to check Username:',
-        errorDuplicateUsername.message,
+        `Failed to check Username: ${errorDuplicateUsername.message}`,
       );
     }
 
@@ -113,8 +116,7 @@ export class AdminsService {
 
     if (errorDuplicateEmail) {
       throw new InternalServerErrorException(
-        'Failed to check Email Address:',
-        errorDuplicateEmail.message,
+        `Failed to check Email Address: ${errorDuplicateEmail.message}`,
       );
     }
 
@@ -128,8 +130,7 @@ export class AdminsService {
 
     if (errorHashedPwd) {
       throw new InternalServerErrorException(
-        'Failed to encrypt Password:',
-        errorHashedPwd.message,
+        `Failed to encrypt Password: ${errorHashedPwd.message}`,
       );
     }
 
@@ -142,8 +143,7 @@ export class AdminsService {
 
     if (errorAdmin) {
       throw new InternalServerErrorException(
-        'Failed to create new Admin:',
-        errorAdmin.message,
+        `Failed to create new Admin: ${errorAdmin.message}`,
       );
     }
 
@@ -167,8 +167,7 @@ export class AdminsService {
 
     if (errorDuplicateUsername) {
       throw new InternalServerErrorException(
-        'Failed to check Username:',
-        errorDuplicateUsername.message,
+        `Failed to check Username: ${errorDuplicateUsername.message}`,
       );
     }
 
@@ -182,8 +181,7 @@ export class AdminsService {
 
     if (errorDuplicateEmail) {
       throw new InternalServerErrorException(
-        'Failed to check Email Address:',
-        errorDuplicateEmail.message,
+        `Failed to check Email Address: ${errorDuplicateEmail.message}`,
       );
     }
 
@@ -197,8 +195,7 @@ export class AdminsService {
 
     if (errorHashedPwd) {
       throw new InternalServerErrorException(
-        'Failed to encrypt Password:',
-        errorHashedPwd.message,
+        `Failed to encrypt Password: ${errorHashedPwd.message}`,
       );
     }
 
@@ -217,8 +214,7 @@ export class AdminsService {
 
     if (errorAdmin) {
       throw new InternalServerErrorException(
-        'Failed to update Admin:',
-        errorAdmin.message,
+        `Failed to update Admin: ${errorAdmin.message}`,
       );
     }
 

@@ -18,7 +18,7 @@ export class TokensService {
     req: Request,
     res: Response,
     user: UserDocument,
-  ): Promise<{ accessToken: string; csrfToken: string }> {
+  ): Promise<{ success: boolean }> {
     const ACCESS_TOKEN_SECRET = this.configService.get<string>(
       'ACCESS_TOKEN_SECRET',
     );
@@ -53,8 +53,7 @@ export class TokensService {
       );
     }
 
-    // Store refreshToken in HTTP-only cookie
-    res.cookie('jwt', refreshToken, {
+    res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: NODE_ENV === 'production',
       sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
@@ -62,7 +61,20 @@ export class TokensService {
       path: '/',
     });
 
-    // CSRF token in cookie
+    // Store refreshToken in HTTP-only cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: NODE_ENV === 'production',
+      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    (req as any).cookies = {
+      ...(req as any).cookies,
+      refreshToken,
+    };
+
     const csrfToken = this.csrfService.generateToken(req, res);
 
     if (!csrfToken) {
@@ -70,8 +82,7 @@ export class TokensService {
     }
 
     return {
-      accessToken,
-      csrfToken,
+      success: true,
     };
   }
 }

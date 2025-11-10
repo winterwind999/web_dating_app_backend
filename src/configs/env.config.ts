@@ -7,14 +7,14 @@ import {
   IsString,
   validateSync,
 } from 'class-validator';
-import { Environment } from 'src/utils/enums';
+import { type Environment, ENVIRONMENTS } from 'src/utils/constants';
 
 class EnvironmentVariables {
-  @IsEnum(Environment, {
-    message: 'NODE_ENV must be one of: development, production, test',
+  @IsEnum(ENVIRONMENTS, {
+    message: 'NODE_ENV must be development or production',
   })
   @IsNotEmpty({ message: 'NODE_ENV is required' })
-  NODE_ENV: Environment = Environment.Development;
+  NODE_ENV: Environment = ENVIRONMENTS.DEVELOPMENT;
 
   @IsString({ message: 'NODE_VERSION must be a string' })
   @IsNotEmpty({ message: 'NODE_VERSION is required' })

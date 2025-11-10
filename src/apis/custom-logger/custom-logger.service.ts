@@ -7,7 +7,7 @@ import { tryCatch } from 'src/utils/tryCatch';
 @Injectable()
 export class CustomLoggerService extends ConsoleLogger {
   private getLogDir(type: 'audit' | 'error') {
-    return path.join(__dirname, '..', '..', 'logs', `${type}-logs`);
+    return path.join(process.cwd(), 'logs', `${type}-logs`);
   }
 
   private formatLogMessage(input: any): string {

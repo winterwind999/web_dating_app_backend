@@ -10,7 +10,6 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 import { GoogleAuthGuard } from 'src/core/guards/google.guard';
 import { LocalGuard } from 'src/core/guards/local.guard';
@@ -18,6 +17,7 @@ import { TokensService } from 'src/helpers/tokens/tokens.service';
 import { UserDocument } from 'src/schemas/user.schema';
 import { tryCatch } from 'src/utils/tryCatch';
 import { Public } from '../../core/decorators/public.decorator';
+import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
@@ -32,7 +32,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly tokensService: TokensService,
-    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Public()
@@ -71,6 +71,11 @@ export class AuthController {
   googleLogin() {
     return { message: 'Google Authentication' };
   }
+
+  @Public()
+  @Get('google/sign-up')
+  @UseGuards(GoogleAuthGuard)
+  googleSignUp() {}
 
   @Public()
   @Get('google/redirect')

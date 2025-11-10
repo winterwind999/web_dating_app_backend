@@ -1,9 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { AlbumType, Gender, UserStatus } from 'src/utils/enums';
+import {
+  type Address,
+  type Album,
+  ALBUM_TYPES,
+  type AlbumType,
+  type Gender,
+  GENDERS,
+  type Photo,
+  type Preferences,
+  USER_ROLES,
+  USER_STATUSES,
+  type UserRole,
+  type UserStatus,
+} from 'src/utils/constants';
 
 @Schema({ _id: false })
-export class Address {
+export class AddressSchema {
   @Prop({ default: '' })
   street: string;
 
@@ -22,10 +35,10 @@ export class Address {
 }
 
 @Schema({ _id: false })
-export class Preferences {
+export class PreferencesSchema {
   @Prop({
     type: [String],
-    enum: Gender,
+    enum: Object.values(GENDERS),
     validate: {
       validator: (arr: string[]) => Array.isArray(arr) && arr.length > 0,
       message: 'At least one gender preference is required',
@@ -45,7 +58,7 @@ export class Preferences {
 }
 
 @Schema({ _id: false })
-export class Album {
+export class AlbumSchema {
   @Prop({ required: true })
   id: string;
 
@@ -55,7 +68,7 @@ export class Album {
   @Prop({ required: true })
   secure_url: string;
 
-  @Prop({ type: String, enum: AlbumType, required: true })
+  @Prop({ type: String, enum: Object.values(ALBUM_TYPES), required: true })
   type: AlbumType;
 
   @Prop({ required: true })
@@ -63,7 +76,7 @@ export class Album {
 }
 
 @Schema({ _id: false })
-export class Photo {
+export class PhotoSchema {
   @Prop({ type: String, default: null })
   public_id: string | null;
 
@@ -73,7 +86,7 @@ export class Photo {
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ type: Photo, default: null })
+  @Prop({ type: PhotoSchema, default: null })
   photo: Photo | null;
 
   @Prop({ required: true, trim: true })
@@ -94,11 +107,11 @@ export class User {
   @Prop({ required: true })
   birthday: string;
 
-  @Prop({ type: String, enum: Gender, required: true })
+  @Prop({ type: String, enum: Object.values(GENDERS), required: true })
   gender: Gender;
 
   @Prop({
-    type: Address,
+    type: AddressSchema,
     required: true,
   })
   address: Address;
@@ -116,22 +129,22 @@ export class User {
   })
   interests: string[];
 
-  @Prop({ type: Preferences, required: true })
+  @Prop({ type: PreferencesSchema, required: true })
   preferences: Preferences;
 
   @Prop({
-    type: [Album],
+    type: [AlbumSchema],
     default: [],
   })
   albums: Album[];
 
-  @Prop({ type: String, enum: UserStatus, required: true })
+  @Prop({ type: String, enum: Object.values(USER_STATUSES), required: true })
   status: UserStatus;
 
-  @Prop({ default: 'User' })
-  role: string;
+  @Prop({ type: String, default: USER_ROLES.USER })
+  role: UserRole;
 
-  @Prop({ default: 0 })
+  @Prop({ type: Number, default: 0 })
   warningCount: number;
 }
 

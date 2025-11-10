@@ -142,8 +142,7 @@ export class UsersController {
 
     if (errorParsed) {
       throw new BadRequestException(
-        'Failed to parse metadata:',
-        errorParsed.message,
+        `Failed to parse metadata: ${errorParsed.message}`,
       );
     }
 
@@ -153,8 +152,7 @@ export class UsersController {
 
     if (errorValidate) {
       throw new BadRequestException(
-        'Failed to validate metadata:',
-        errorValidate.message,
+        `Failed to validate metadata: ${errorValidate.message}`,
       );
     }
 

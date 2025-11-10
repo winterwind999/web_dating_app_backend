@@ -1,5 +1,10 @@
 import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { Reason, ReportStatus } from 'src/utils/enums';
+import {
+  REPORT_REASONS,
+  REPORT_STATUSES,
+  type ReportReason,
+  type ReportStatus,
+} from 'src/utils/constants';
 
 export class CreateReportDto {
   @IsString()
@@ -11,15 +16,15 @@ export class CreateReportDto {
   reportedUser: string;
 
   @IsArray()
-  @IsEnum(Reason, { each: true })
+  @IsEnum(Object.values(REPORT_REASONS), { each: true })
   @IsNotEmpty()
-  reasons: Reason[];
+  reasons: ReportReason[];
 
   @IsString()
   @IsNotEmpty()
   description: string;
 
-  @IsEnum([ReportStatus])
+  @IsEnum(Object.values(REPORT_STATUSES))
   @IsNotEmpty()
   status: ReportStatus;
 }

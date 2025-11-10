@@ -11,7 +11,7 @@ import { Like, LikeDocument } from 'src/schemas/like.schema';
 import { Match, MatchDocument } from 'src/schemas/match.schema';
 import { Report, ReportDocument } from 'src/schemas/report.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
-import { UserStatus } from 'src/utils/enums';
+import { USER_STATUSES } from 'src/utils/constants';
 import { tryCatch } from 'src/utils/tryCatch';
 import { UsersService } from '../users/users.service';
 
@@ -27,7 +27,7 @@ export class FeedsService {
     @InjectModel(Report.name) private reportModel: Model<ReportDocument>,
   ) {}
 
-  async findOne(
+  async getFeeds(
     userId: string,
   ): Promise<{ feeds: UserDocument[]; message: string; total: number }> {
     if (!isObjectIdOrHexString(userId)) {
@@ -42,7 +42,7 @@ export class FeedsService {
       throw errorUser;
     }
 
-    if (user.status !== UserStatus.ACTIVE) {
+    if (user.status !== USER_STATUSES.ACTIVE) {
       return {
         feeds: [],
         message: 'User account is not active',
@@ -59,15 +59,12 @@ export class FeedsService {
       { data: reportedUsers, error: errorReportedUsers },
       { data: reportedCurrentUser, error: errorReportedCurrentUser },
     ] = await Promise.all([
-      // Users the current user has liked
       tryCatch(this.likeModel.find({ user: userId }).distinct('likedUser')),
 
-      // Users the current user has disliked
       tryCatch(
         this.dislikeModel.find({ user: userId }).distinct('dislikedUser'),
       ),
 
-      // Users the current user has matched with
       tryCatch(
         this.matchModel
           .find({
@@ -83,18 +80,14 @@ export class FeedsService {
           }),
       ),
 
-      // Users blocked by the current user
       tryCatch(this.blockModel.find({ user: userId }).distinct('blockedUser')),
 
-      // Users who blocked the current user
       tryCatch(this.blockModel.find({ blockedUser: userId }).distinct('user')),
 
-      // Users reported by the current user
       tryCatch(
         this.reportModel.find({ user: userId }).distinct('reportedUser'),
       ),
 
-      // Users who reported the current user
       tryCatch(
         this.reportModel.find({ reportedUser: userId }).distinct('user'),
       ),
@@ -102,55 +95,48 @@ export class FeedsService {
 
     if (errorLikedUsers) {
       throw new InternalServerErrorException(
-        'Failed to get liked Users:',
-        errorLikedUsers.message,
+        `Failed to get liked Users: ${errorLikedUsers.message}`,
       );
     }
 
     if (errorDislikedUsers) {
       throw new InternalServerErrorException(
-        'Failed to get disliked Users:',
-        errorDislikedUsers.message,
+        `Failed to get disliked Users: ${errorDislikedUsers.message}`,
       );
     }
 
     if (errorMatchedUsers) {
       throw new InternalServerErrorException(
-        'Failed to get matched Users:',
-        errorMatchedUsers.message,
+        `Failed to get matched Users: ${errorMatchedUsers.message}`,
       );
     }
 
     if (errorBlockedByCurrentUser) {
       throw new InternalServerErrorException(
-        'Failed to get blocked by User:',
-        errorBlockedByCurrentUser.message,
+        `Failed to get blocked by User: ${errorBlockedByCurrentUser.message}`,
       );
     }
 
     if (errorBlockedCurrentUser) {
       throw new InternalServerErrorException(
-        'Failed to get blocks to User:',
-        errorBlockedCurrentUser.message,
+        `Failed to get blocks to User: ${errorBlockedCurrentUser.message}`,
       );
     }
 
     if (errorReportedUsers) {
       throw new InternalServerErrorException(
-        'Failed to get reported by User:',
-        errorReportedUsers.message,
+        `Failed to get reported by User: ${errorReportedUsers.message}`,
       );
     }
 
     if (errorReportedCurrentUser) {
       throw new InternalServerErrorException(
-        'Failed to get reports to User:',
-        errorReportedCurrentUser.message,
+        `Failed to get reports to User: ${errorReportedCurrentUser.message}`,
       );
     }
 
     const excludedUserIds = new Set([
-      userId, // Exclude self
+      userId,
       ...likedUsers.map((id) => id.toString()),
       ...dislikedUsers.map((id) => id.toString()),
       ...matchedUsers,
@@ -160,34 +146,38 @@ export class FeedsService {
       ...reportedCurrentUser.map((id) => id.toString()),
     ]);
 
-    // Calculate age range based on current date
     const today = new Date();
     const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    const currentDay = today.getDate();
 
     const minBirthDate = new Date(
-      currentYear - user.preferences.maxAge - 1,
-      today.getMonth(),
-      today.getDate(),
+      currentYear - user.preferences.maxAge,
+      currentMonth,
+      currentDay,
     );
 
     const maxBirthDate = new Date(
       currentYear - user.preferences.minAge,
-      today.getMonth(),
-      today.getDate(),
+      currentMonth,
+      currentDay,
     );
+    maxBirthDate.setDate(maxBirthDate.getDate() + 1);
 
-    // Build the query
+    const minBirthDateStr = minBirthDate.toISOString().split('T')[0];
+    const maxBirthDateStr = maxBirthDate.toISOString().split('T')[0];
+
     const query: any = {
       _id: { $nin: Array.from(excludedUserIds) },
-      status: UserStatus.ACTIVE,
+      status: USER_STATUSES.ACTIVE,
       gender: { $in: user.preferences.genderPreference },
       birthday: {
-        $gte: minBirthDate,
-        $lte: maxBirthDate,
+        $gte: minBirthDateStr,
+        $lt: maxBirthDateStr,
       },
     };
+    const countQuery = { ...query };
 
-    // Add geospatial query if user has coordinates
     if (user.address.coordinates && user.address.coordinates.length === 2) {
       const maxDistanceInMeters = user.preferences.maxDistance * 1000;
 
@@ -200,28 +190,48 @@ export class FeedsService {
           $maxDistance: maxDistanceInMeters,
         },
       };
+
+      countQuery['address.coordinates'] = {
+        $geoWithin: {
+          $centerSphere: [
+            user.address.coordinates,
+            maxDistanceInMeters / 6378100,
+          ],
+        },
+      };
     }
 
-    const { data: feeds, error: errorFeeds } = await tryCatch(
-      this.userModel
-        .find(query)
-        .select('-password')
-        .limit(50)
-        .lean<UserDocument[]>()
-        .exec(),
-    );
+    const [
+      { data: feeds, error: errorFeeds },
+      { data: totalCount, error: errorCount },
+    ] = await Promise.all([
+      tryCatch(
+        this.userModel
+          .find(query)
+          .select('-password')
+          .limit(1)
+          .lean<UserDocument[]>()
+          .exec(),
+      ),
+      tryCatch(this.userModel.countDocuments(countQuery).exec()),
+    ]);
 
     if (errorFeeds) {
       throw new InternalServerErrorException(
-        'Failed to get Feeds:',
-        errorFeeds.message,
+        `Failed to get Feeds: ${errorFeeds.message}`,
+      );
+    }
+
+    if (errorCount) {
+      throw new InternalServerErrorException(
+        `Failed to get Feeds count: ${errorCount.message}`,
       );
     }
 
     return {
       feeds,
       message: '',
-      total: feeds.length,
+      total: totalCount,
     };
   }
 }
