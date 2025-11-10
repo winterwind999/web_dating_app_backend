@@ -22,6 +22,7 @@ export const createCorsOptions = (
 
     console.log('NODE_ENV', NODE_ENV);
     console.log('isAllowed', isAllowed);
+    console.log('origin', origin);
 
     if (isAllowed) {
       callback(null, true);
