@@ -1,7 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { CorsOptions } from 'cors';
 
-const allowedOrigins = ['http://localhost:3000'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://matchy-1uri.onrender.com',
+];
 
 export const createCorsOptions = (
   configService: ConfigService,
