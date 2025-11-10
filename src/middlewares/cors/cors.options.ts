@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import { CorsOptions } from 'cors';
 
 const allowedOrigins = [
@@ -6,25 +5,12 @@ const allowedOrigins = [
   'https://matchy-1uri.onrender.com',
 ];
 
-export const createCorsOptions = (
-  configService: ConfigService,
-): CorsOptions => ({
+export const createCorsOptions = (): CorsOptions => ({
   origin: (
     origin: string | undefined,
     callback: (err: Error | null, allow: boolean) => void,
   ) => {
-    const NODE_ENV = configService.get<string>('NODE_ENV');
-
-    const isAllowed =
-      NODE_ENV === 'production'
-        ? allowedOrigins.includes(origin || '')
-        : !origin || allowedOrigins.includes(origin || '');
-
-    console.log('NODE_ENV', NODE_ENV);
-    console.log('isAllowed', isAllowed);
-    console.log('origin', origin);
-
-    if (isAllowed) {
+    if (!origin || allowedOrigins.includes(origin || '')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'), false);

@@ -21,7 +21,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  app.enableCors(createCorsOptions(configService));
+  app.enableCors(createCorsOptions());
 
   app.use(cookieParser());
 
