@@ -10,3 +10,9 @@ services:
       - .env
     volumes:
       - ./src:/usr/src/app/src
+    networks:
+      - web_network
+
+networks:
+  web_network:
+    external: true
