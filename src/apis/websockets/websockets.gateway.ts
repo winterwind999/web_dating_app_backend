@@ -19,9 +19,12 @@ import { NotificationsService } from '../notifications/notifications.service';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://matchy-1uri.onrender.com'],
     credentials: true,
+    methods: ['GET', 'POST'],
   },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
 })
 @Injectable()
 export class WebsocketsGateway
