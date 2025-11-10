@@ -20,6 +20,9 @@ export const createCorsOptions = (
         ? allowedOrigins.includes(origin || '')
         : !origin || allowedOrigins.includes(origin || '');
 
+    console.log('NODE_ENV', NODE_ENV);
+    console.log('isAllowed', isAllowed);
+
     if (isAllowed) {
       callback(null, true);
     } else {
