@@ -65,6 +65,7 @@
 - ✅ Add admin dashboard API
 - ✅ Dockerize backend
 - ✅ Setup GitHub Actions
+- ✅ Setup Docker Hub
 - ⏳ Deploy to Render
 
 ## License
