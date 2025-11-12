@@ -316,8 +316,10 @@ export class UsersService {
 
     const { error: errorUpdate } = await tryCatch(user.save());
 
-    if (!errorUpdate) {
-      throw new NotFoundException('User not found');
+    if (errorUpdate) {
+      throw new NotFoundException(
+        `Failed to update User: ${errorUpdate.message}`,
+      );
     }
 
     return user;
