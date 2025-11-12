@@ -19,11 +19,10 @@ export const ALBUM_TYPES = {
 export type AlbumType = (typeof ALBUM_TYPES)[keyof typeof ALBUM_TYPES];
 
 export type Album = {
-  id: string;
+  id: number;
   public_id: string;
   secure_url: string;
   type: AlbumType;
-  sortOrder: number;
 };
 
 export const USER_STATUSES = {

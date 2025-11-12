@@ -100,7 +100,7 @@ export class UsersController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: 'image/*' }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png|gif|webp)$/ }),
         ],
         fileIsRequired: true,
       }),
@@ -148,11 +148,22 @@ export class UsersController {
 
     uploadAlbumsDto = plainToClass(UploadAlbumsDto, parsed);
 
-    const { error: errorValidate } = await tryCatch(validate(uploadAlbumsDto));
+    const { data: validateAlbums, error: errorValidateAlbums } = await tryCatch(
+      validate(uploadAlbumsDto),
+    );
 
-    if (errorValidate) {
+    if (errorValidateAlbums) {
       throw new BadRequestException(
-        `Failed to validate metadata: ${errorValidate.message}`,
+        `Failed to validate metadata: ${errorValidateAlbums.message}`,
+      );
+    }
+
+    if (validateAlbums.length > 0) {
+      throw new BadRequestException(
+        `Validation failed: ${validateAlbums
+          .map((e) => Object.values(e.constraints || {}))
+          .flat()
+          .join(', ')}`,
       );
     }
 

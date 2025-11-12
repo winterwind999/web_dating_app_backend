@@ -60,7 +60,7 @@ export class PreferencesSchema {
 @Schema({ _id: false })
 export class AlbumSchema {
   @Prop({ required: true })
-  id: string;
+  id: number;
 
   @Prop({ required: true })
   public_id: string;
@@ -70,9 +70,6 @@ export class AlbumSchema {
 
   @Prop({ type: String, enum: Object.values(ALBUM_TYPES), required: true })
   type: AlbumType;
-
-  @Prop({ required: true })
-  sortOrder: number;
 }
 
 @Schema({ _id: false })
@@ -86,7 +83,10 @@ export class PhotoSchema {
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ type: PhotoSchema, default: null })
+  @Prop({
+    type: PhotoSchema,
+    default: () => ({ public_id: null, secure_url: null }),
+  })
   photo: Photo | null;
 
   @Prop({ required: true, trim: true })

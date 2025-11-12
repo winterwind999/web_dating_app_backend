@@ -275,6 +275,32 @@ export class UsersService {
       throw new BadRequestException('Invalid User ID format');
     }
 
+    const { data: user, error: errorUser } = await tryCatch(
+      this.userModel.findById(userId).select('-password').exec(),
+    );
+
+    if (errorUser) {
+      throw new InternalServerErrorException(
+        `Failed to get User: ${errorUser.message}`,
+      );
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.photo?.public_id) {
+      const { error: errorDelete } = await tryCatch(
+        this.cloudinaryService.destroyMedia(user.photo.public_id),
+      );
+
+      if (errorDelete) {
+        throw new InternalServerErrorException(
+          `Failed to delete a photo in Cloudinary: ${user.photo.public_id}, ${errorDelete.message}`,
+        );
+      }
+    }
+
     const { data: uploadedPhoto, error: errorUploadedPhoto } = await tryCatch(
       this.cloudinaryService.uploadBuffer(photo, 'dating-app'),
     );
@@ -285,35 +311,14 @@ export class UsersService {
       );
     }
 
-    const { data: user, error: errorUser } = await tryCatch(
-      this.userModel
-        .findByIdAndUpdate(
-          userId,
-          {
-            photo: {
-              public_id: uploadedPhoto.public_id,
-              secure_url: uploadedPhoto.secure_url,
-            },
-          },
-          {
-            new: true,
-            runValidators: true,
-          },
-        )
-        .exec(),
-    );
+    user.photo!.public_id = uploadedPhoto.public_id;
+    user.photo!.secure_url = uploadedPhoto.secure_url;
 
-    if (errorUser) {
-      throw new InternalServerErrorException(
-        `Failed to update User: ${errorUser.message}`,
-      );
-    }
+    const { error: errorUpdate } = await tryCatch(user.save());
 
-    if (!user) {
+    if (!errorUpdate) {
       throw new NotFoundException('User not found');
     }
-
-    user.password = '';
 
     return user;
   }
@@ -363,10 +368,13 @@ export class UsersService {
 
     const finalAlbums: Album[] = [];
 
-    for (const uploadedAlbum of uploadedAlbums) {
-      const album = albums.find(
-        (file) => file.originalname === uploadedAlbum.filename,
-      );
+    const sortedUploadedAlbums = [...uploadAlbumsDto.albums].sort(
+      (a, b) => a.id - b.id,
+    );
+
+    for (let i = 0; i < sortedUploadedAlbums.length; i++) {
+      const uploadedAlbum = sortedUploadedAlbums[i];
+      const album = albums[i];
 
       if (album) {
         const { data: result, error: errorResult } = await tryCatch(
@@ -375,7 +383,7 @@ export class UsersService {
 
         if (errorResult) {
           throw new InternalServerErrorException(
-            `Failed to upload album ${album.originalname} to Cloudinary: ${errorResult.message}`,
+            `Failed to upload album ${uploadedAlbum.id} to Cloudinary: ${errorResult.message}`,
           );
         }
 
@@ -384,7 +392,6 @@ export class UsersService {
           public_id: result.public_id,
           secure_url: result.secure_url,
           type: uploadedAlbum.type,
-          sortOrder: uploadedAlbum.sortOrder,
         });
       } else {
         const existing = existingAlbums.find(
@@ -392,13 +399,7 @@ export class UsersService {
         );
 
         if (existing) {
-          finalAlbums.push({
-            id: uploadedAlbum.id,
-            public_id: existing.public_id,
-            secure_url: existing.secure_url,
-            type: uploadedAlbum.type,
-            sortOrder: uploadedAlbum.sortOrder,
-          });
+          finalAlbums.push(existing);
         }
       }
     }

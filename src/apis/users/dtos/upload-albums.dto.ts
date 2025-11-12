@@ -11,9 +11,9 @@ import {
 import { ALBUM_TYPES, type AlbumType } from 'src/utils/constants';
 
 export class AlbumDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  id: string;
+  id: number;
 
   @IsString()
   @IsNotEmpty()
@@ -22,10 +22,6 @@ export class AlbumDto {
   @IsEnum(Object.values(ALBUM_TYPES))
   @IsNotEmpty()
   type: AlbumType;
-
-  @IsNumber()
-  @IsNotEmpty()
-  sortOrder: number;
 }
 
 export class UploadAlbumsDto {
