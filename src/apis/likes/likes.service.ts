@@ -66,7 +66,7 @@ export class LikesService {
 
       const userPayload: NotificationPayload = {
         user: createLikeDto.likedUser,
-        message: `You and ${user.firstName} ${user.middleName} ${user.lastName} have matched! start chatting now`,
+        message: `💘 It's a match! You and ${user.firstName} ${user.lastName} are connected. Start chatting now!`,
         isRead: false,
       };
 
@@ -82,7 +82,7 @@ export class LikesService {
 
       const likedUserPayload: NotificationPayload = {
         user: createLikeDto.user,
-        message: `You and ${likedUser.firstName} ${likedUser.middleName} ${likedUser.lastName} have matched! start chatting now`,
+        message: `💘 It's a match! You and ${likedUser.firstName} ${likedUser.lastName} are connected. Start chatting now!`,
         isRead: false,
       };
 

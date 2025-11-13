@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-  ArrayMinSize,
   IsArray,
   IsEnum,
   IsNotEmpty,
@@ -26,7 +25,6 @@ export class AlbumDto {
 
 export class UploadAlbumsDto {
   @IsArray()
-  @ArrayMinSize(3)
   @ValidateNested({ each: true })
   @Type(() => AlbumDto)
   albums: AlbumDto[];

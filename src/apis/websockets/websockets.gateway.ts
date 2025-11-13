@@ -86,8 +86,6 @@ export class WebsocketsGateway
     @MessageBody()
     payload: ChatPayload,
   ) {
-    this.logger.log('backend sendChatsendChatsendChatsendChat');
-
     const senderRoom = `user:${payload.senderUser}`;
     const receiverRoom = `user:${payload.receiverUser}`;
 

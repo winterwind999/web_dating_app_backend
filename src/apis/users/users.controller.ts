@@ -146,7 +146,7 @@ export class UsersController {
       );
     }
 
-    uploadAlbumsDto = plainToClass(UploadAlbumsDto, parsed);
+    uploadAlbumsDto = plainToClass(UploadAlbumsDto, { albums: parsed });
 
     const { data: validateAlbums, error: errorValidateAlbums } = await tryCatch(
       validate(uploadAlbumsDto),
@@ -176,5 +176,21 @@ export class UsersController {
     }
 
     return { message: 'Albums uploaded' };
+  }
+
+  @Patch('removeAlbum/:userId/:albumId')
+  async removeAlbum(
+    @Param('userId') userId: string,
+    @Param('albumId', ParseIntPipe) albumId: number,
+  ) {
+    const { error } = await tryCatch(
+      this.usersService.removeAlbum(userId, albumId),
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return { message: 'Album removed' };
   }
 }

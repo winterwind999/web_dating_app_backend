@@ -370,13 +370,10 @@ export class UsersService {
 
     const finalAlbums: Album[] = [];
 
-    const sortedUploadedAlbums = [...uploadAlbumsDto.albums].sort(
-      (a, b) => a.id - b.id,
-    );
-
-    for (let i = 0; i < sortedUploadedAlbums.length; i++) {
-      const uploadedAlbum = sortedUploadedAlbums[i];
-      const album = albums[i];
+    for (const uploadedAlbum of uploadedAlbums) {
+      const album = albums.find(
+        (file) => file.originalname === uploadedAlbum.filename,
+      );
 
       if (album) {
         const { data: result, error: errorResult } = await tryCatch(
@@ -385,7 +382,7 @@ export class UsersService {
 
         if (errorResult) {
           throw new InternalServerErrorException(
-            `Failed to upload album ${uploadedAlbum.id} to Cloudinary: ${errorResult.message}`,
+            `Failed to upload album ${album.originalname} to Cloudinary: ${errorResult.message}`,
           );
         }
 
@@ -407,6 +404,58 @@ export class UsersService {
     }
 
     user.albums = finalAlbums;
+
+    const { data: update, error: errorUpdate } = await tryCatch(user.save());
+
+    if (errorUpdate) {
+      throw new InternalServerErrorException(
+        `Failed to update User: ${errorUpdate.message}`,
+      );
+    }
+
+    update.password = '';
+
+    return update;
+  }
+
+  async removeAlbum(userId: string, albumId: number) {
+    if (!isObjectIdOrHexString(userId)) {
+      throw new BadRequestException('Invalid User ID format');
+    }
+
+    const { data: user, error: errorUser } = await tryCatch(
+      this.userModel.findById(userId).exec(),
+    );
+
+    if (errorUser) {
+      throw new InternalServerErrorException(
+        `Failed to get User: ${errorUser.message}`,
+      );
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const album = user.albums.find((album) => album.id === albumId);
+
+    if (!album) {
+      throw new NotFoundException(`Album ${albumId} not found`);
+    }
+
+    const { error: errorDelete } = await tryCatch(
+      this.cloudinaryService.destroyMedia(album.public_id),
+    );
+
+    if (errorDelete) {
+      throw new InternalServerErrorException(
+        `Failed to delete album ${albumId} in Cloudinary: ${errorDelete.message}`,
+      );
+    }
+
+    const filteredAlbums = user.albums.filter((album) => album.id !== albumId);
+
+    user.albums = filteredAlbums;
 
     const { data: update, error: errorUpdate } = await tryCatch(user.save());
 
