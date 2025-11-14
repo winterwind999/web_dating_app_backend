@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Match, MatchSchema } from 'src/schemas/match.schema';
 import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
+import { Block, BlockSchema } from 'src/schemas/block.schema';
 
 @Module({
   imports: [
@@ -10,6 +11,10 @@ import { MatchesService } from './matches.service';
       {
         name: Match.name,
         schema: MatchSchema,
+      },
+      {
+        name: Block.name,
+        schema: BlockSchema,
       },
     ]),
   ],

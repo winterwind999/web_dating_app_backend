@@ -28,6 +28,76 @@
   npm run start:prod
 ```
 
+## Docker Setup
+
+### Prerequisites
+
+- Docker installed on your machine
+- Docker Compose installed
+- `.env` file configured with required environment variables
+
+### Development Environment
+
+#### Build and Run with Docker Compose
+
+```bash
+docker-compose build
+
+docker-compose up
+
+docker-compose up --build
+
+docker-compose up -d
+
+docker-compose logs -f
+
+docker-compose down
+```
+
+#### Build Development Image Manually
+
+```bash
+docker build -t web_dating_app_backend:dev -f Dockerfile .
+
+docker run -p 3500:3500 --env-file .env web_dating_app_backend:dev
+```
+
+### Production Environment
+
+#### Build and Run with Docker Compose
+
+```bash
+docker-compose -f docker-compose.prod.yml build
+
+docker-compose -f docker-compose.prod.yml up
+
+docker-compose -f docker-compose.prod.yml up --build
+
+docker-compose -f docker-compose.prod.yml up -d
+
+docker-compose -f docker-compose.prod.yml logs -f
+
+docker-compose -f docker-compose.prod.yml down
+```
+
+#### Build Production Image Manually
+
+```bash
+docker build -t web_dating_app_backend:prod -f Dockerfile.prod .
+
+docker run -p 3500:3500 --env-file .env web_dating_app_backend:prod
+```
+
+### Docker Network Setup
+
+Before running the containers, ensure the external network exists:
+
+```bash
+docker network create web_network
+
+docker network ls
+```
+
 ## Legend
 
 | Symbol | Meaning                       |
@@ -61,8 +131,8 @@
 - ✅ Setup controllers and services for uploading photo and albums
 - ✅ Setup WebSockets
 - ✅ Setup notifications and chats schema
-- ✅ Add real-time notifications and chats
-- ✅ Add admin dashboard API
+- ✅ Added real-time notifications and chats
+- ✅ Added admin dashboard API
 - ✅ Dockerize backend
 - ✅ Setup GitHub Actions
 - ✅ Setup Docker Hub
