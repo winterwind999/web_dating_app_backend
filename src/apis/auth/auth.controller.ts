@@ -151,7 +151,7 @@ export class AuthController {
 
     // Pass all tokens in URL
     return res.redirect(
-      `${FRONTEND_URL}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&csrfToken=${csrfToken}`,
+      `${FRONTEND_URL}/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&csrfToken=${csrfToken}`,
     );
   }
 
