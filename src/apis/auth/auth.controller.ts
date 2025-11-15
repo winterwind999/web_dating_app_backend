@@ -10,6 +10,7 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 import { GoogleAuthGuard } from 'src/core/guards/google.guard';
 import { LocalGuard } from 'src/core/guards/local.guard';
@@ -17,7 +18,6 @@ import { TokensService } from 'src/helpers/tokens/tokens.service';
 import { UserDocument } from 'src/schemas/user.schema';
 import { tryCatch } from 'src/utils/tryCatch';
 import { Public } from '../../core/decorators/public.decorator';
-import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
@@ -32,7 +32,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly tokensService: TokensService,
-    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Public()
@@ -85,7 +85,7 @@ export class AuthController {
       throw new UnauthorizedException('Authentication failed');
     }
 
-    const { data: tokens, error: errorTokens } = await tryCatch(
+    const { error: errorTokens } = await tryCatch(
       this.tokensService.loginTokens(req, res, req.user),
     );
 
@@ -93,7 +93,9 @@ export class AuthController {
       errorTokens;
     }
 
-    return tokens;
+    const FRONTEND_URL = this.configService.get<string>('FRONTEND_URL');
+
+    return res.redirect(`${FRONTEND_URL}/feeds`);
   }
 
   @Post('logout')
