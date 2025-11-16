@@ -11,7 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { Model } from 'mongoose';
-import nodemailer from 'nodemailer';
+import Mailjet from 'node-mailjet';
 import { UsersService } from 'src/apis/users/users.service';
 import { CsrfService } from 'src/middlewares/csrf/csrf.service';
 import { Otp, OtpDocument } from 'src/schemas/otp.schema';
@@ -248,43 +248,41 @@ export class AuthService {
       throw new InternalServerErrorException('Failed to create OTP');
     }
 
-    const GOOGLE_APP_EMAIL = this.configService.get<string>('GOOGLE_APP_EMAIL');
-    const GOOGLE_APP_PASSWORD = this.configService.get<string>(
-      'GOOGLE_APP_PASSWORD',
-    );
+    const MAILJET_API_KEY = this.configService.get<string>('MAILJET_API_KEY');
+    const MAILJET_API_SECRET =
+      this.configService.get<string>('MAILJET_API_SECRET');
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: GOOGLE_APP_EMAIL,
-        pass: GOOGLE_APP_PASSWORD,
-      },
-    });
-
-    const mailOptions = {
-      from: {
-        name: 'Matchy',
-        address: GOOGLE_APP_EMAIL!,
-      },
-      to: [user.email],
-      subject: `Matchy OTP Forgot Password`,
-      html: `
-        <div>
-          <p style="color: red; font-weight: bold;">Don't share this with anyone.</p>
-          <p>Your OTP is <b>${otp}</b></p>
-        </div>
-      `,
-    };
+    const mailjet = Mailjet.apiConnect(MAILJET_API_KEY!, MAILJET_API_SECRET!);
 
     const { error: errorSend } = await tryCatch(
-      transporter.sendMail(mailOptions),
+      mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [
+          {
+            From: {
+              Email: 'facioljordan5@gmail.com',
+              Name: 'Matchy',
+            },
+            To: [
+              {
+                Email: user.email,
+                Name: `${user.firstName} ${user.middleName} ${user.lastName}`,
+              },
+            ],
+            Subject: 'Matchy OTP Forgot Password',
+            HtmlPart: `
+            <div>
+              <p style="color: red; font-weight: bold;">Don't share this with anyone.</p>
+              <p>Your OTP is <b>${otp}</b></p>
+            </div>
+          `,
+          },
+        ],
+      }),
     );
 
     if (errorSend) {
       throw new InternalServerErrorException(
-        `Failed to OTP send to Email Address: ${errorSend.message}`,
+        `Failed to send OTP: ${errorSend.message}`,
       );
     }
 

@@ -47,14 +47,6 @@ class EnvironmentVariables {
   @IsNotEmpty({ message: 'MONGODB_URI is required' })
   MONGODB_URI: string;
 
-  @IsString({ message: 'GOOGLE_APP_EMAIL must be a string' })
-  @IsNotEmpty({ message: 'GOOGLE_APP_EMAIL is required' })
-  GOOGLE_APP_EMAIL: string;
-
-  @IsString({ message: 'GOOGLE_APP_PASSWORD must be a string' })
-  @IsNotEmpty({ message: 'GOOGLE_APP_PASSWORD is required' })
-  GOOGLE_APP_PASSWORD: string;
-
   @IsString({ message: 'GOOGLE_CLIENT_ID must be a string' })
   @IsNotEmpty({ message: 'GOOGLE_CLIENT_ID is required' })
   GOOGLE_CLIENT_ID: string;
@@ -74,6 +66,14 @@ class EnvironmentVariables {
   @IsString({ message: 'CLOUDINARY_CLOUDNAME must be a string' })
   @IsNotEmpty({ message: 'CLOUDINARY_CLOUDNAME is required' })
   CLOUDINARY_CLOUDNAME: string;
+
+  @IsString({ message: 'MAILJET_API_KEY must be a string' })
+  @IsNotEmpty({ message: 'MAILJET_API_KEY is required' })
+  MAILJET_API_KEY: string;
+
+  @IsString({ message: 'MAILJET_API_SECRET must be a string' })
+  @IsNotEmpty({ message: 'MAILJET_API_SECRET is required' })
+  MAILJET_API_SECRET: string;
 }
 
 export function validate(config: Record<string, unknown>) {
@@ -111,13 +111,13 @@ const configuration = () => ({
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   CSRF_SECRET: process.env.CSRF_SECRET,
   MONGODB_URI: process.env.MONGODB_URI,
-  GOOGLE_APP_EMAIL: process.env.GOOGLE_APP_EMAIL,
-  GOOGLE_APP_PASSWORD: process.env.GOOGLE_APP_PASSWORD,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   CLOUDINARY_CLOUDNAME: process.env.CLOUDINARY_CLOUDNAME,
+  MAILJET_API_KEY: process.env.MAILJET_API_KEY,
+  MAILJET_API_SECRET: process.env.MAILJET_API_SECRET,
 });
 
 export default configuration;
