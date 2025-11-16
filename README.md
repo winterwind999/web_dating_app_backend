@@ -118,21 +118,17 @@ docker network ls
 - ✅ Setup user schema
 - ✅ Setup likes, dislikes, matches, reports, and block schemas
 - ✅ Setup user controllers and services
-- ✅ Setup admin schema
 - ✅ Setup otp schema
 - ✅ Setup CSRF
-- ✅ Integrate Passport.js with JWT
-- ✅ Integrate Passport.js with Google
-- ✅ Setup Role-based access control
+- ✅ Integrated Passport.js with JWT
+- ✅ Added Google OAuth 2.0 on Passport.js
 - ✅ Setup controllers and services for likes, dislikes, matches, reports, blocks, and feeds
-- ✅ Setup admin controllers and services
 - ✅ Setup Multer for uploads
 - ✅ Setup Cloudinary
 - ✅ Setup controllers and services for uploading photo and albums
 - ✅ Setup WebSockets
 - ✅ Setup notifications and chats schema
 - ✅ Added real-time notifications and chats
-- ✅ Added admin dashboard API
 - ✅ Dockerize backend
 - ✅ Setup GitHub Actions
 - ✅ Setup Docker Hub

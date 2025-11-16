@@ -80,27 +80,6 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   googleSignUp() {}
 
-  // @Public()
-  // @Get('google/redirect')
-  // @UseGuards(GoogleAuthGuard)
-  // async googleRedirect(@Req() req: RequestWithUser, @Res() res: Response) {
-  //   if (!req.user) {
-  //     throw new UnauthorizedException('Authentication failed');
-  //   }
-
-  //   const { error: errorTokens } = await tryCatch(
-  //     this.tokensService.loginTokens(req, res, req.user),
-  //   );
-
-  //   if (errorTokens) {
-  //     errorTokens;
-  //   }
-
-  //   const FRONTEND_URL = this.configService.get<string>('FRONTEND_URL');
-
-  //   return res.redirect(`${FRONTEND_URL}/feeds`);
-  // }
-
   @Public()
   @Get('google/redirect')
   @UseGuards(GoogleAuthGuard)

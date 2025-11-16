@@ -18,8 +18,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     );
     const BACKEND_URL = configService.getOrThrow<string>('BACKEND_URL');
 
-    console.log('BACKEND_URL', BACKEND_URL);
-
     const options: StrategyOptions = {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,

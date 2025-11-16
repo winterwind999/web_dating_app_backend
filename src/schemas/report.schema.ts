@@ -1,10 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import {
-  REPORT_ACTIONS,
   REPORT_REASONS,
   REPORT_STATUSES,
-  type ReportAction,
   type ReportReason,
   type ReportStatus,
 } from 'src/utils/constants';
@@ -47,17 +45,17 @@ export class Report {
   })
   status: ReportStatus;
 
-  @Prop({ type: String, enum: Object.values(REPORT_ACTIONS), default: null })
-  action: ReportAction | null;
+  // @Prop({ type: String, enum: Object.values(REPORT_ACTIONS), default: null })
+  // action: ReportAction | null;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null })
-  reviewedBy: mongoose.Types.ObjectId | null;
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null })
+  // reviewedBy: mongoose.Types.ObjectId | null;
 
-  @Prop({ type: Date, default: null })
-  reviewedAt: Date | null;
+  // @Prop({ type: Date, default: null })
+  // reviewedAt: Date | null;
 
-  @Prop({ type: String, default: null })
-  reviewNotes: string | null;
+  // @Prop({ type: String, default: null })
+  // reviewNotes: string | null;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

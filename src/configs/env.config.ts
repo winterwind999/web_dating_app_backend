@@ -47,9 +47,13 @@ class EnvironmentVariables {
   @IsNotEmpty({ message: 'MONGODB_URI is required' })
   MONGODB_URI: string;
 
-  @IsString({ message: 'RESEND_API_KEY must be a string' })
-  @IsNotEmpty({ message: 'RESEND_API_KEY is required' })
-  RESEND_API_KEY: string;
+  @IsString({ message: 'GOOGLE_APP_EMAIL must be a string' })
+  @IsNotEmpty({ message: 'GOOGLE_APP_EMAIL is required' })
+  GOOGLE_APP_EMAIL: string;
+
+  @IsString({ message: 'GOOGLE_APP_PASSWORD must be a string' })
+  @IsNotEmpty({ message: 'GOOGLE_APP_PASSWORD is required' })
+  GOOGLE_APP_PASSWORD: string;
 
   @IsString({ message: 'GOOGLE_CLIENT_ID must be a string' })
   @IsNotEmpty({ message: 'GOOGLE_CLIENT_ID is required' })
@@ -107,7 +111,8 @@ const configuration = () => ({
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   CSRF_SECRET: process.env.CSRF_SECRET,
   MONGODB_URI: process.env.MONGODB_URI,
-  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  GOOGLE_APP_EMAIL: process.env.GOOGLE_APP_EMAIL,
+  GOOGLE_APP_PASSWORD: process.env.GOOGLE_APP_PASSWORD,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,

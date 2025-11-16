@@ -9,9 +9,9 @@ import {
   GENDERS,
   type Photo,
   type Preferences,
-  USER_ROLES,
+  // USER_ROLES,
   USER_STATUSES,
-  type UserRole,
+  // type UserRole,
   type UserStatus,
 } from 'src/utils/constants';
 
@@ -141,8 +141,8 @@ export class User {
   @Prop({ type: String, enum: Object.values(USER_STATUSES), required: true })
   status: UserStatus;
 
-  @Prop({ type: String, default: USER_ROLES.USER })
-  role: UserRole;
+  // @Prop({ type: String, default: USER_ROLES.USER })
+  // role: UserRole;
 
   @Prop({ type: Number, default: 0 })
   warningCount: number;

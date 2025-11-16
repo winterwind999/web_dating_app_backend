@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { memoryStorage } from 'multer';
-import { AdminsModule } from './apis/admins/admins.module';
 import { AuthModule } from './apis/auth/auth.module';
 import { BlocksModule } from './apis/blocks/blocks.module';
 import { ChatsModule } from './apis/chats/chats.module';
@@ -21,7 +20,6 @@ import { WebsocketsModule } from './apis/websockets/websockets.module';
 import configuration, { validate } from './configs/env.config';
 import { CsrfGuard } from './core/guards/csrf.guard';
 import { JwtAuthGuard } from './core/guards/jwt.guard';
-import { RolesGuard } from './core/guards/roles.guard';
 import { CloudinaryModule } from './helpers/cloudinary/cloudinary.module';
 import { TokensModule } from './helpers/tokens/tokens.module';
 import { TokensService } from './helpers/tokens/tokens.service';
@@ -65,7 +63,6 @@ import { CsrfModule } from './middlewares/csrf/csrf.module';
     TokensModule,
     CustomLoggerModule,
     UsersModule,
-    AdminsModule,
     LikesModule,
     DislikesModule,
     MatchesModule,
@@ -91,10 +88,10 @@ import { CsrfModule } from './middlewares/csrf/csrf.module';
       provide: APP_GUARD,
       useClass: CsrfGuard,
     },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
     TokensService,
   ],
 })

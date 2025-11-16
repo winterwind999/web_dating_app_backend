@@ -11,7 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { Model } from 'mongoose';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { UsersService } from 'src/apis/users/users.service';
 import { CsrfService } from 'src/middlewares/csrf/csrf.service';
 import { Otp, OtpDocument } from 'src/schemas/otp.schema';
@@ -248,21 +248,38 @@ export class AuthService {
       throw new InternalServerErrorException('Failed to create OTP');
     }
 
-    const RESEND_API_KEY = this.configService.get<string>('RESEND_API_KEY');
+    const GOOGLE_APP_EMAIL = this.configService.get<string>('GOOGLE_APP_EMAIL');
+    const GOOGLE_APP_PASSWORD = this.configService.get<string>(
+      'GOOGLE_APP_PASSWORD',
+    );
 
-    const resend = new Resend(RESEND_API_KEY);
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: GOOGLE_APP_EMAIL,
+        pass: GOOGLE_APP_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: {
+        name: 'Matchy',
+        address: GOOGLE_APP_EMAIL!,
+      },
+      to: [user.email],
+      subject: `Matchy OTP Forgot Password`,
+      html: `
+        <div>
+          <p style="color: red; font-weight: bold;">Don't share this with anyone.</p>
+          <p>Your OTP is <b>${otp}</b></p>
+        </div>
+      `,
+    };
 
     const { error: errorSend } = await tryCatch(
-      resend.emails.send({
-        from: 'JGF Portfolio <onboarding@resend.dev>',
-        to: 'facioljordan5@gmail.com',
-        subject: 'JGF Portfolio OTP Forgot Password',
-        html: `
-              <div>
-                <p>Your OTP is <b>${otp}</b></p>
-              </div>
-            `,
-      }),
+      transporter.sendMail(mailOptions),
     );
 
     if (errorSend) {
